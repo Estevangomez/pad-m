@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Monitor de Memória JVM</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+      text-align: center;
+      padding: 30px;
+    }
+    canvas {
+      max-width: 700px;
+      margin: 20px auto;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>📊 Monitor de Memória JVM</h1>
+  <p>Atualiza a cada 5 segundos</p>
+  <canvas id="heapChart"></canvas>
+
+  <script>
+    const ctx = document.getElementById('heapChart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Heap Usado (MB)',
+          data: [],
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'MB'
+            }
+          }
+        },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+
+    async function fetchMemory() {
+      try {
+        const response = await fetch('/actuator/metrics/jvm.memory.used');
+        const data = await response.json();
+
+        const heapArea = data.availableTags.find(t => t.tag === "area").values;
+        if (heapArea.includes("heap")) {
+          const value = data.measurements[0].value / 1024 / 1024; // em MB
+          const now = new Date().toLocaleTimeString();
+
+          chart.data.labels.push(now);
+          chart.data.datasets[0].data.push(value);
+
+          if (chart.data.labels.length > 20) {
+            chart.data.labels.shift();
+            chart.data.datasets[0].data.shift();
+          }
+
+          chart.update();
+        }
+      } catch (err) {
+        console.error("Erro ao buscar métricas:", err);
+      }
+    }
+
+    // Atualiza a cada 5 segundos
+    setInterval(fetchMemory, 5000);
+    fetchMemory();
+  </script>
+</body>
+</html>

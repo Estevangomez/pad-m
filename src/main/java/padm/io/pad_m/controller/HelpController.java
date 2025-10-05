@@ -7,7 +7,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @RequestMapping("/helps")
-public class helpController {
+public class HelpController {
 
 	@GetMapping
 	public ModelAndView findAll() {
