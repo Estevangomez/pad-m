@@ -44,7 +44,7 @@ public class WebSecurityConfigAD implements WebMvcConfigurer{
 	          .csrf(csrf -> csrf.disable())
 	          .authorizeHttpRequests(authz -> authz
 	        		  .antMatchers("/login/**").permitAll()
-	        		  .antMatchers("/monitor/**").permitAll()
+	        		 // .antMatchers("/monitor/**").permitAll()
 	           		  .antMatchers("/css/**").permitAll()
 	           		  .antMatchers("/webjars/**").permitAll()
 	    		      .antMatchers("/images/**").permitAll()
