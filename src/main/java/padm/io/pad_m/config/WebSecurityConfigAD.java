@@ -36,30 +36,38 @@ public class WebSecurityConfigAD implements WebMvcConfigurer{
 		auth.authenticationProvider(authProvider);
 	} */
 	  
-	   @Bean
-	    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-			http.authenticationProvider(authProvider);
-	        http
-	          .cors(cors -> cors.disable())
-	          .csrf(csrf -> csrf.disable())
-	          .authorizeHttpRequests(authz -> authz
-	        		  .antMatchers("/login/**").permitAll()
-	        		 // .antMatchers("/monitor/**").permitAll()
-	           		  .antMatchers("/css/**").permitAll()
-	           		  .antMatchers("/webjars/**").permitAll()
-	    		      .antMatchers("/images/**").permitAll()
-	    		      .antMatchers("/js/**").permitAll()
-	    			  .antMatchers("/fonts/**").permitAll()
-	    			  .antMatchers("/api/v1/**").permitAll()
-	        		  .anyRequest().authenticated()
-	        		  ).formLogin(
-	        				  formLogin -> formLogin
-	                          .loginPage("/login")
-									  .failureUrl("/login?error=true")  // Redireciona em caso de erro
-	                          .permitAll()
-	                    ).logout(logout -> logout.logoutSuccessUrl("/login").permitAll().logoutUrl("/logout") );
-	         return http.build();
-	    }
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	    http.authenticationProvider(authProvider);
+	    http
+	        .cors(cors -> cors.disable())
+	        .csrf(csrf -> csrf.disable())
+	        .authorizeHttpRequests(authz -> authz
+	            .antMatchers("/login/**").permitAll()
+	            // .antMatchers("/monitor/**").permitAll() // pode liberar se quiser ver sem logar
+	            .antMatchers("/css/**").permitAll()
+	            .antMatchers("/webjars/**").permitAll()
+	            .antMatchers("/images/**").permitAll()
+	            .antMatchers("/js/**").permitAll()
+	            .antMatchers("/fonts/**").permitAll()
+	            .antMatchers("/api/v1/**").permitAll()
+	            .anyRequest().authenticated()
+	        )
+	        .formLogin(formLogin -> formLogin
+	            .loginPage("/login")
+	            .failureUrl("/login?error=true") // Redireciona em caso de erro
+	            .defaultSuccessUrl("/", true)    // 👈 ADICIONE ESTA LINHA
+	            .permitAll()
+	        )
+	        .logout(logout -> logout
+	            .logoutSuccessUrl("/login")
+	            .permitAll()
+	            .logoutUrl("/logout")
+	        );
+
+	    return http.build();
+	}
+
 	   
 /*
 	   @Bean
