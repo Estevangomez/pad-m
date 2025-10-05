@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout.html}">
+<head>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+            background: linear-gradient(to bottom right, #ffffff, #f8f9fa);
+        }
+        .card:hover {
+            transform: scale(1.00);
+        }
+        .card-header {
+            background-color: #00537d;
+            color: #fff;
+            border-radius: 10px 10px 0 0;
+            padding: 1rem;
+        }
+        .badge {
+            font-size: 0.875rem;
+        }
+        .btn {
+            border-radius: 5px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 0.5rem; 
+        }
+        
+        .form-select {
+            padding: 0.375rem 0.75rem; 
+            margin: 1rem 0;
+            margin-left: 11px; 
+            border: 1px solid #ced4da; 
+            border-radius: 0.375rem; 
+            background-color: #f8f9fa; 
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; 
+        }
+        .form-select:hover {
+            border-color: #00537d;
+            box-shadow: 0 0 5px rgba(0, 83, 125, 0.6); 
+        }
+        .form-select:focus {
+            border-color: #00537d; 
+            box-shadow: 0 0 5px rgba(0, 83, 125, 0.6); 
+            outline: none; 
+        }
+    </style>
+</head>
+<body>
+    <section layout:fragment="content" class="justify-content-center align-items-center p-2">
+        <div class="container text-center text-md-start mt-3">
+            <div class="row mb-1">
+                <div class="col-md-6">
+                    <form action="" method="get" class="row g-3" id="frm">
+                        <input type="hidden" th:value="${setor}" id="idSetor">
+                        <select id="tipagem" class="form-select form-select-sm" name="tipagem">          
+                            <option th:text="${'Selecione '}" th:value="${'0'}"></option>  
+                            <option th:text="${'Tramitados para Setor'}" th:value="${'1'}"></option>  
+                            <option th:text="${'Não Tramitados no Setor'}" th:value="${'2'}"></option>  
+                            <option th:text="${'Arquivados'}" th:value="${'3'}"></option>                      
+                        </select>	
+                    </form>
+                </div>      
+            </div>   
+
+            <div class="row"> 
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5><i class="bi bi-people" aria-hidden="true"></i> Processos </h5>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <a class="btn btn-sm btn-primary" th:href="@{/processos/new}" role="button" title="Cadastrar Processo">
+                                        <i class="bi bi-file-earmark-plus"></i> Novo Processo
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <table class="table" id="processos">
+                                <thead>
+                                    <tr>                                       
+                                        <th scope="col"><span class="badge bg-secondary">Número/Ano</span></th>
+                                        <th scope="col"><span class="badge bg-secondary">Assunto</span></th>
+                                        <th style="width: 5px;"><span class="badge bg-secondary">Classificação</span></th>
+                                        <th scope="col"><span class="badge bg-secondary">Ações</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="rs : ${processos}" th:id="'tr' + ${rs.id}">                                  
+                                        <td>
+                                           <a th:href="@{/processos/finalizarUploadDoc/{id}/doc/{docId}(id=${rs.id}, docId=0)}" 
+											   th:data-record-id="${rs.id}" 
+											   th:data-record-numano="${rs.numanoproc}" 
+											   th:id="'tramite' + ${rs.id}" 
+											   title="Processos">
+											    <span th:text="${rs.numanoproc}"></span>
+										</a> 
+                                        </td>
+                                        <td>
+                                            <a th:href="@{/processos/frmApensar/} + ${rs.id}" th:data-record-id="${rs.id}" th:data-record-numano="${rs.numanoproc}" th:id="'tramite' + ${rs.id}" title="Apensar Processos">
+                                                <span th:text="${rs.assunto}"></span>
+                                            </a> 
+                                        </td>
+                                        <td th:text="${rs.classificacao}"></td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <span th:if="${rs.arquivado == 0}">
+                                                    <a class="btn btn-sm btn-primary" href="#" th:id="'indicarProcesso' + ${rs.id}" role="button" th:data-record-numano="${rs.numanoproc}" th:data-record-id="${rs.id}" title="Indicar para Atendimento">
+                                                        <i class="fa fa-hand-o-right" aria-hidden="true"></i> 
+                                                    </a>
+                                                    <a class="btn btn-sm btn-warning" th:href="@{/tramite/new/} + ${rs.id}" role="button" th:id="'tramitarProcesso' + ${rs.id}" th:data-record-id="${rs.id}" title="Tramitar Processo">
+                                                         <i class="fa fa-share" aria-hidden="true"></i>
+                                                    </a>
+                                                    <a class="btn btn-sm btn-danger" href="#" role="button" th:id="'arquivarDesarquivarProcesso' + ${rs.id}" th:data-record-id="${rs.id}" th:data-record-arquivado="${rs.arquivado}" title="Arquivar Processo">
+                                                        <i class="bi-archive"></i>  
+                                                    </a>
+                                                </span>
+                                                <span th:if="${rs.arquivado == 1}">                                         
+                                                    <a class="btn btn-sm btn-danger" href="#" role="button" th:id="'arquivarDesarquivarProcesso' + ${rs.id}" th:data-record-id="${rs.id}" th:data-record-arquivado="${rs.arquivado}" title="Desarquivar Processo">
+                                                      <i class="bi-arrow-counterclockwise"></i>  
+                                                    </a>
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal -->
+            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Processo <span id="nprocesso"></span></h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title"><b>Eventos do Processo</b></h6>
+                                            <div id="eventos"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>       
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalIndicarprocesso" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title fs-5"> Processo <span class="badge text-bg-secondary" id="modalNumProcesso"></span> </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="modalNumProcessoInput">
+                        <label>Selecione a indicação para esse processo:</label>
+                        <select id="indicacao" class="form-select form-select-sm"></select>	
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" id="fechar">Fechar</button>      
+                        <button type="button" class="btn btn-success btn-sm" id="salvarIndicacao">Salvar</button>     
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div layout:fragment="jscript">
+        <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
+        <script>
+            const URL = '[[@{/}]]api/';
+            
+            $(document).ready(function () {
+                $('#processos').DataTable({
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/Portuguese.json' // Adiciona o idioma em português
+                    },
+                    ordering: false // Desativa a ordenação globalmente
+                });
+            });
+            
+            $("[id*='tramitarProcesso']").click(function (event) {
+                $("#loader").show(); 
+            });
+            
+            $("#fechar").click(function (event) {
+                $("#loader").hide(); 
+            });
+            
+            $("[id*='indicarProcesso']").click(function (event) {
+                $("#loader").show();  
+                event.preventDefault();
+                var data = $(event.delegateTarget).data();
+                var id = data.recordId;
+                var numano = data.recordNumano;
+                var idSetor = $("#idSetor").val();
+                $("#indicacao option").remove();        
+                $.ajax({
+                    url: URL + "usuarios/setor/" + idSetor,
+                    method: "GET",
+                }).done(function (data) { 
+                    $('#indicacao').append($('<option>', { value: 0, text: "Selecione..." }));            
+                    $.each(data, function (index, rs) {                        
+                        $('#indicacao').append($('<option>', { 
+                            value: rs.id,
+                            text: rs.nome
+                        }));
+                    });                     			
+                    $("#loader").hide(); 
+                });
+                
+                $("#modalNumProcesso").text(numano);
+                $("#modalNumProcessoInput").val(id);
+                
+                $('#modalIndicarprocesso').modal('show');
+            });
+            
+            $("[id*='arquivarDesarquivarProcesso']").click(function (event) {   	
+                event.preventDefault();
+                var data = $(event.delegateTarget).data();
+                var id = data.recordId;
+                var numano = data.recordNumano;
+                var idSetor = $("#idSetor").val();      
+                var arquivado = data.recordArquivado;         
+                var situacao = "";
+                
+                if (arquivado == 1)
+                    situacao = "Desarquivar";
+                else
+                    situacao = "Arquivar";
+                
+                swal({
+                    title: 'Atenção!',
+                    text: "Deseja " + situacao + " Processo?",
+                    icon: 'warning',
+                    buttons: [true, "Sim!"]
+                }).then((result) => {
+                    if (result) {
+                        $("#loader").show();        
+                        $.ajax({
+                            url: URL + "tramites/processo/arquivar/" + id + "/arquivado/" + arquivado,
+                            method: "GET",
+                        }).done(function (data) {              
+                            $("#loader").hide(); 
+                            swal("Sucesso", data.mensagem, data.type)	
+                        });       
+                    }
+                });    
+            });
+
+            $("#salvarIndicacao").click(function (event) {           	   
+                event.preventDefault();
+                var idProcesso = $("#modalNumProcessoInput").val();
+                var indicacao = $("#indicacao").val();
+                $("#loader").show();  
+                $.ajax({
+                    url: URL + "tramites/processo/id/" + idProcesso + "/responsavel/" + indicacao,
+                    method: "GET",
+                }).done(function (data) {    
+                    if (data.ret == 1)
+                        swal("Sucesso", data.mensagem, data.type)		
+                    else
+                        swal("Error", data.mensagem, data.type);	
+                    $("#loader").hide(); 
+                    $('#modalIndicarprocesso').modal('hide');
+                });
+            }); 
+            
+            $("#tipagem").change(function() {
+                $("#loader").show(); 
+                $("#frm").submit();
+            });
+        </script>
+    </div>
+</body>
+</html>

@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout.html}">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+            background: linear-gradient(to bottom right, #ffffff, #f8f9fa);
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .card-header {
+            background-color: #00537d;
+            color: #fff;
+            border-radius: 10px 10px 0 0;
+            padding: 1rem;
+        }
+        .badge {
+            font-size: 0.875rem;
+        }
+        .btn {
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <section layout:fragment="content" class="justify-content-center align-items-center p-2">
+        <div class="container text-center text-md-start mt-3">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6><i class="bi bi-people" aria-hidden="true"></i> Assinantes do Documento</h6>
+                                </div>
+                            
+                            </div>
+                        </div>
+                        <div class="card-body">
+      							
+      					 <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Nome</th>
+                                        <th scope="col">Data</th>                                           
+                                      
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="rs : ${assinantes}" th:id="'tr' + ${rs.id}">
+                                        <td th:text="${rs.usuario.nome}"></td>                                        
+                                        <td th:text="${rs.data}"></td>                                
+                             
+                                   
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </section>
+	<div layout:fragment="jscript">
+   <script>
+    // URL base para as operações AJAX
+    const URL = '[[@{/}]]api/';
+
+    // Função para exclusão de usuário com SweetAlert
+    $("[id*='del']").click(function(event) {
+        event.preventDefault();
+        const data = $(event.delegateTarget).data();
+        const id = data.recordId;
+        const nome = data.recordNome;
+
+        swal({
+            title: 'Excluir?',
+            text: "Remover o acesso do Usuário? (" + nome + ")",
+            icon: 'warning',
+            buttons: [true, "Sim Excluir!"]
+        }).then((result) => {
+            if (result) {
+                $.ajax({
+                    url: URL + "atendentes/delete/" + id,
+                    method: "DELETE",
+                    statusCode: {
+                        403: function() {
+                            swal("Atenção", "Você não tem permissão para realizar essa operação", "error");
+                        }
+                    }
+                }).done(function() {
+                	 swal("Sucesso", "Atendente Deletado", "success");
+                    $('#tr' + id).remove();
+                });
+            }
+        });
+    });
+
+
+</script>
+</div>
+</body>
+</html>
+

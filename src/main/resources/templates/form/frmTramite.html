@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout.html}">
+
+<head>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+            background: linear-gradient(to bottom right, #ffffff, #f8f9fa);
+        }
+        .card:hover {
+            transform: scale(1.00);
+        }
+        .card-header {
+            background-color: #00537d;
+            color: #fff;
+            border-radius: 10px 10px 0 0;
+            padding: 1rem;
+        }
+        .badge {
+            font-size: 0.875rem;
+        }
+        .btn {
+            border-radius: 5px;
+        }
+        
+        /* Ajustes para os campos de formulário */
+        .form-label {
+            margin-bottom: 0.5rem;
+        }
+        .form-control-sm {
+            height: calc(1.8125rem + 2px);
+        }
+        
+        /* Melhoria no stepper */
+        .stepper-wrapper {
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .col-md-6 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+            .card {
+                margin-top: 20px;
+            }
+        }
+    </style>
+
+
+</head>
+<body>
+	<section layout:fragment="content" class="justify-content-center align-items-center p-2">
+	 <nav aria-label="breadcrumb">
+	  <ol class="breadcrumb">
+	    <li class="breadcrumb-item"><a href="#"> <i class="fa fa-home fa-sm" style="font-size:20px;color:black;"></i></a></li>
+	    <li class="breadcrumb-item"><a href="#">Home</a></li>
+	    <li class="breadcrumb-item"><a href="#">Processos</a></li>
+	    <li class="breadcrumb-item"><a href="#">Tramitar Processo</a></li>
+	   <!--  <li class="breadcrumb-item">Criar Novo Processo</li> -->
+	    
+	  </ol>
+</nav>
+		
+<div class="container text-center text-md-start mt-3">
+   <div class="row">
+       <div class="col-12 ">
+        <div class="card">
+            <div class="card-header">Tramitar de Processo</div>
+            <div class="card-body">
+                <form th:action="@{/tramite/save}" th:object="${tramite}" method="post" class="row g-3" id="frm">
+                    <input type="hidden" th:field="*{id}">       
+                    <input type="hidden" id="idProcesso" th:field="*{procId}">
+                     <div class="col-12 mb-3">
+                         <label for="tipo" class="form-label">Processo</label>
+                         <label id="idproc" class="form-label" th:text="${processo.id}"></label>
+                         <span class="badge bg-secondary" th:text="${processo.numanoproc} + ' - ' +    ${processo.assunto}"></span>
+                    </div>   
+          
+                    <div class="col-4 mb-3">
+                        <label for="destino" class="form-label">Destino do Processo</label>
+                           <select id="destino" class="form-select form-select-sm" th:field="*{setordestino}"> 
+                            <option th:text="${'Selecione o Destino'}" th:value="${'0'}"></option>
+                            <option th:each="setor : ${setores}" th:text="${setor.nome}" th:value="${setor.id}"></option>
+                            <option th:each="usuario : ${usuarios}" th:text="${usuario.nome}" th:value="${usuario.id}"></option>     
+                        </select>                      
+                    </div>  
+                    
+                    <div class="col-4 mb-3">
+                        <label for="tipo" class="form-label">Finalidade</label>
+                        <input type="text" id="assunto" class="form-control form-control-sm" th:field="*{finalidade}" placeholder="Finalidade">
+                    </div>   
+                    
+                     <div class="col-4 mb-3">
+                        <label for="tipo" class="form-label">Responder Quantos dias </label>
+                        <input type="text" id="assunto" class="form-control form-control-sm" title="Quantidade de dias para uma resposta" th:field="*{qtdDiasResposta}" placeholder="Quantidade Dias">
+                    </div>  
+                    
+                    
+                    <div class="col-6 mb-3">                     
+                        <div class="card" style="width: 90rem; color: #00537d;">                    
+                        </div>
+                    </div>                                      
+						
+                       <div class="col-12 text-end">
+                        <button type="button" class="btn btn-warning btn-sm rounded-pill" id="voltar" onclick="history.back()"> 
+                            Voltar&nbsp;&nbsp;&nbsp;
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm rounded-pill" id="salvar"> 
+                            Salvar&nbsp;&nbsp;&nbsp;
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        </div>
+      </div>
+        
+        
+        
+    </section>
+
+    <div layout:fragment="jscript">
+      <script>
+      var URL = '[[@{/}]]';  
+      $("#loader").show();
+    
+      
+      $("#idproc").hide();       
+      $("#idProcesso").val($("#idproc").text());     
+      $("#destino").select2();
+      $(document).ready(function() {
+    	  $("#loader").hide();  
+          $("#salvar").click(function(event) {
+              event.preventDefault();
+              var data = $(event.delegateTarget).data();
+              var id = data.recordId;
+              swal({
+                  title: 'Salvar?',
+                  text: "Deseja Tramitar Processo?",
+                  icon: 'warning',
+                  buttons: [true, "Sim!"]
+              }).then((result) => {
+                  if (result) {
+                	  $("#loader").show();        
+                	  var frm = $("#frm").submit();
+                	  setInterval(function () { swal("Sucesso", "Resgistro salvo com sucesso", "success")}, 15000);
+                	  
+                   ;	                      
+                    
+                  }
+              })
+          });
+        });
+
+        </script>
+    </div>
+</body>
+</html>

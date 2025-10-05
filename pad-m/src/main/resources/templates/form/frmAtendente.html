@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout.html}">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"> 
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">   
+    <style>
+        body {
+            margin-top: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center; 
+            height: 70vh; 
+            background-color: #f8f9fa;
+        }
+        .card {
+            width: 100%;
+            max-width: 1500px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            overflow: hidden; 
+        }
+        .card-header {
+            background-color: #00537d;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+        .form-label {
+            font-weight: 600;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            display: flex; /* Alinha o conteúdo do botão */
+            align-items: center; /* Centraliza o texto e o ícone verticalmente */
+            justify-content: center; /* Alinha o conteúdo ao centro */
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+        .spinner {
+            margin-left: 10px; /* Adiciona um espaçamento entre o texto e o ícone */
+            display: none; /* Esconde o spinner inicialmente */
+        }
+        .form-footer {
+            display: flex;
+            justify-content: flex-end; /* Garante que o botão "Avançar" fique no final (à direita) */
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <section layout:fragment="content">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/processos}">
+                        <i class="bi bi-house-fill" style="color: black;"></i>
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="#" data-toggle="modal" data-target="#helpModal">
+                        <i class="bi bi-question-circle" style="color: black;"></i>
+                    </a>
+                </li>
+            </ol>
+        </nav>		
+
+
+        <div class="card">
+            <div class="card-header">Cadastro de Atendente</div>
+            <div class="card-body">
+                <form th:action="@{/atendente/save}" th:object="${atendente}" method="post" class="row g-3" id="frm">
+                    <input type="hidden" th:field="*{id}">
+          				
+          			<!-- Servidor -->
+                        <div class="col-4 mb-3">
+                            <label for="usuario" class="form-label">Usuario</label>
+                            <select id="usuario"  class="form-select form-select-sm" th:field="*{usuario.id}">
+						       <option th:text="${'Selecione o usuario'}" th:value="${'0'}">	
+						       <option th:each="u : ${usuarios}" th:text="${u.nome}" th:value="${u.id}">
+						    </select>
+                        </div>                       
+                    
+             
+                      <div class="col-6 mb-3">
+                        <label for="assunto" class="form-label">Observação</label>
+                        <input type="text" id="obs" class="form-control form-control-sm" th:field="*{obs}" placeholder="Observação">
+                    </div> 
+                    
+                    <div class="col-6 mb-3">                     
+                        <div class="card" style="width: 90rem; color: #00537d;">                    
+                        </div>
+                    </div>                                      
+					
+					
+                    
+                    <!-- Adicionando o alinhamento correto do botão à direita -->
+                    <div class="col-12 form-footer">
+                        <button type="button" class="btn btn-primary btn-sm rounded-pill buttonload" id="salvar"> 
+                            Salvar <span class="spinner fa fa-spinner fa-spin"></span> <!-- Spinner oculto por padrão -->
+                        </button>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+    </section>
+
+
+
+    <div layout:fragment="jscript">             
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script type="text/javascript">
+           var URL = '[[@{/}]]api';
+            $("#loader").show();
+            $(".fa-spin").hide();
+            $(document).ready(function() {
+                $("#loader").hide();
+            });    
+            
+            $('#salvar').on('click', function() {
+                var usuario = $("#usuario").val();
+               
+                if (usuario == "" || usuario == 0) { 
+                    swal("Erro", "Escolha um Usuario", "error");    
+                } else {
+                    $(this).prop("disabled", true);
+                    $(".spinner").show(); 
+                    var idUsuario = $("#usuario").val();
+                    $.ajax({
+                    	url: URL+  "/atendentes/usuario/"+idUsuario,
+                    	success: function(result){
+                    		console.log(result)
+                    		if(result.id != null){
+                    			 swal("Erro", "Já Existe um Atendente para esse Usuario", "error");  
+                    		}else{
+                    			$("#frm").submit();
+                    		}
+                    			
+                       		
+                      }});
+
+                }
+            });
+            
+            
+            
+           
+        </script>
+    </div>
+</body>
+</html>

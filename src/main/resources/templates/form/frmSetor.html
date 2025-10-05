@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout.html}">
+<head>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin-top: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+            background-color: #f8f9fa;
+        }
+        .card {
+            width: 100%;
+            max-width: 1500px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+             overflow: hidden; 
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+        .form-label {
+            font-weight: 600;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+    </style>
+</head>
+<body>
+    <section layout:fragment="content">
+        <div class="card">
+            <div class="card-header">Cadastro de Setor</div>
+            <div class="card-body">
+                <form th:action="@{/setores/save}" th:object="${setor}" method="post" class="row g-3" id="frm">
+                    <input type="hidden" th:field="*{id}">
+
+                    <div class="col-md-6 mb-3">
+                        <label for="orgao" class="form-label">Órgão</label>
+                        <select id="orgao" class="form-select form-select-sm" th:field="*{orgaoid.id}">
+                            <option th:text="'Selecione o órgão'" th:value="'0'"></option>
+                            <option value="1">Presidencia</option>
+                            <option value="2">Administração</option>
+                            <option value="3">Corregedoria</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="localidade" class="form-label">Localidade</label>
+                        <select id="localidade" class="form-select form-select-sm" th:field="*{localidadeid.id}">
+                            <option th:text="'Selecione a Localidade'" th:value="'0'"></option>
+                            <option value="1">Presidencia</option>
+                            <option value="2">Administração</option>
+                            <option value="3">Corregedoria</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label for="descricao" class="form-label">Descrição</label>
+                        <input type="text" id="descricao" class="form-control" th:field="*{descricao}" placeholder="Descrição">
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label for="segmento" class="form-label">Segmento</label>
+                        <input type="text" id="segmento" class="form-control" th:field="*{segmento}" placeholder="Segmento">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="sigla" class="form-label">Sigla</label>
+                        <input type="text" id="sigla" class="form-control" th:field="*{sigla}" placeholder="Sigla">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="responsavel" class="form-label">Responsável</label>
+                        <input type="text" id="responsavel" class="form-control" th:field="*{responsavelId}" placeholder="Responsável">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="gestor" class="form-label">Gestor</label>
+                        <select id="gestor" class="form-select form-select-sm" th:field="*{gestorId.id}">
+                            <option th:text="'Selecione o Gestor'" th:value="'0'"></option>
+                            <option value="1">Estevan</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="obs" class="form-label">Observação</label>
+                        <input type="text" id="obs" class="form-control" th:field="*{obs}" placeholder="Observação">
+                    </div>
+
+                    <div class="col-12 text-right">
+                        <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <div layout:fragment="jscript">
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script>
+            var URL = '[[@{/}]]';
+            $("#loader").show();
+            $(document).ready(function() {
+                $("#loader").hide();
+                $("#salvar").click(function(event) {
+                    event.preventDefault();
+                    var data = $(event.delegateTarget).data();
+                    var id = data.recordId;
+                    swal({
+                        title: 'Salvar?',
+                        text: "Deseja salvar novo Usuario?",
+                        icon: 'warning',
+                        buttons: [true, "Sim Salvar!"]
+                    }).then((result) => {
+                        if (result) {
+                            $("#frm").submit();
+                        }
+                    })
+                });
+            });
+
+            $("#orgao").change(function(){
+                var orgao = $("#orgao").val();
+                $.ajax({
+                    url: URL + "/localidades/orgao/" + orgao,
+                    method: "GET",
+                }).done(function(data) {
+                    $('#localidade').empty().append($('<option>', {value: 0, text : "Selecione a Localidade" }));
+                    $.each(data, function(index, rs){
+                        $('#localidade').append($('<option>', { value: rs.id, text : rs.nome }));
+                    });
+                    $("#loader").hide();
+                });
+            });
+
+            $("#localidade").change(function(){
+                var orgao = $("#orgao").val();
+                var localidade = $("#localidade").val();
+                $.ajax({
+                    url: URL + "/unidades/orgao/" + orgao + "/localidade/" + localidade,
+                    method: "GET",
+                }).done(function(data) {
+                    $('#unidade').empty().append($('<option>', {value: 0, text : "Selecione a Unidade" }));
+                    $.each(data, function(index, rs){
+                        $('#unidade').append($('<option>', { value: rs.id, text : rs.nome }));
+                    });
+                    $("#loader").hide();
+                });
+            });
+        </script>
+    </div>
+</body>
+</html>

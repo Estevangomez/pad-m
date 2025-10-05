@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout.html}">
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+            background: linear-gradient(to bottom right, #ffffff, #f8f9fa);
+            margin-bottom: 20px;
+            margin-top: 75px;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+    
+</style>
+</head>
+<body>
+    <section layout:fragment="content">
+        <div class="container mt-4">
+            <div class="card">
+                <div class="card-header" style="background-color: #00537d; color: white;">
+                    <h5><span class="badge text-bg-secondary">
+                        <i class="bi bi-upload"></i> 
+                        <span> Adicionar Documento</span>
+                    </span></h5>
+                </div>
+                <div class="card-body ">
+                    <div th:if="${alertMessage}"
+                         th:classappend="'alert-' + ${alertMessage.type}"
+                         class="alert alert-dismissible fade" role="alert">
+                        <span th:text="${alertMessage.message}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <form th:action="@{/docs/files/upload/addDoc}" th:object="${doc}" method="post" id="frm" class="row g-3" enctype="multipart/form-data">
+                        <input type="hidden" name="idProcesso" id="idProcesso" th:field="${processo.id}" />
+                      
+                     	
+                     	     <div class="col-md-4 mb-3">
+			                     <label for="nomdoc" class="form-label">Nome do Documento</label>
+			                     <input type="text" id="nomdoc" name="nomdoc" class="form-control form-control-sm" th:field="*{nomdoc}" required/>
+			                </div>
+			                
+			                <div class="col-md-4 mb-3">
+			                    <label for="cpf" class="form-label">Tipo</label>
+			                    <select id="tipo" th:errorclass="is-invalid" class="form-select form-select-sm" th:field="*{tipoDoc}">
+			                        <option th:text="${'Selecione o Tipo'}" th:value="${'0'}"></option>
+			                        <option th:each="tipo : ${tipos}" th:text="${tipo.tipo}" th:value="${tipo.id}"></option>
+			                    </select>
+			                </div> 			                
+			                  
+			                <div class="col-md-4 mb-3">
+			                    <label for="cpf" class="form-label">Visibilidade</label>
+			                    <select id="tipo" th:errorclass="is-invalid" class="form-select form-select-sm" th:field="*{sigiloId}">
+			                        <option th:text="${'Selecione'}" th:value="${'0'}"></option>
+			                        <option th:each="sigilo : ${sigilos}" th:text="${sigilo.visibilidade}" th:value="${sigilo.id}"></option>
+			                    </select>
+			                </div> 
+			                
+                        <div class="mb-3">
+                            <input id="input-file" type="file" name="file" class="form-control-file" />
+                        </div>
+                        <div class="d-flex justify-content-end">
+	                       
+	                        <button type="button" class="btn btn-success btn-sm mr-1" id="salvar">                    
+                     	     salvar <span class="spinner fa fa-spinner fa-spin"></span> <!-- Spinner oculto por padrão --> 
+                     	    </button>       
+                     	                    
+	                        <button type="button" class="btn btn-warning btn-sm" id="voltar" onclick="history.back()">Voltar</button>
+                        </div>
+                        
+                    </form>
+                </div>              
+            </div>
+        </div>
+    </section>
+    
+
+    <div layout:fragment="jscript">      
+    <script type="text/javascript">
+    setTimeout(function() { $("#msg").fadeOut( "slow")}, 3000);
+        $( '#multiple-select-processos' ).select2( {
+            theme: "bootstrap-5",
+            width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+            placeholder: $( this ).data( 'placeholder' ),
+            closeOnSelect: false,
+        } );
+        
+            $("#loader").show();
+            $(".fa-spin").hide();
+            $(document).ready(function() {
+                $("#loader").hide();
+            });    
+            
+            $('#salvar').on('click', function() {  					
+                swal({
+                    title: 'Salvar?',
+                    text: "Deseja Salvar novo Documento?",
+                    icon: 'warning',
+                    buttons: [true, "Sim!"]
+                }).then((result) => {
+                    if (result) {
+                  	  $("#loader").show();        
+                  	  $("#frm").submit();
+                  	  setInterval(function () { swal("Sucesso", "Resgistro salvo com sucesso", "success")}, 15000);
+                  	  
+                     ;	                      
+                      
+                    }
+                })   
+                
+            });
+        </script>
+    </div>
+</body>
+
+
+</html>

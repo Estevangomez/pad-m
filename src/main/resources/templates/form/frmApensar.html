@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout.html}">
+<head>
+    
+    <style>
+        body {
+            margin-top: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center; 
+            height: 70vh; 
+            background-color: #f8f9fa;
+        }
+        .card {
+            width: 100%;
+            max-width: 1500px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            overflow: hidden; 
+        }
+        .card-header {
+            background-color: #00537d;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+        .form-label {
+            font-weight: 600;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            display: flex; /* Alinha o conteúdo do botão */
+            align-items: center; /* Centraliza o texto e o ícone verticalmente */
+            justify-content: center; /* Alinha o conteúdo ao centro */
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+        .spinner {
+            margin-left: 10px; /* Adiciona um espaçamento entre o texto e o ícone */
+            display: none; /* Esconde o spinner inicialmente */
+        }
+        .form-footer {
+            display: flex;
+            justify-content: flex-end; /* Garante que o botão "Avançar" fique no final (à direita) */
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <section layout:fragment="content">       
+       <ol class="breadcrumb">
+	    <li class="breadcrumb-item"><a href="#"> <i class="fa fa-home fa-sm" style="font-size:20px;color:black;"></i></a></li>
+	    <li class="breadcrumb-item"><a href="#">Home</a></li>
+	    <li class="breadcrumb-item"><a href="#">Processos</a></li>
+	    <li class="breadcrumb-item"><a href="#">Apensar</a></li>    
+	  </ol>
+
+        <div class="card">
+        <div th:if="${r.type=='success'}">
+	        <div class="alert alert-success" role="alert" id="msg">
+	  			<span th:text="${r.mensagem}"></span>
+			</div>
+		</div>
+		<div th:if="${r.type=='error'}">
+	        <div class="alert alert-success" role="alert" id="msg">
+	  				<span th:text="${r.mensagem}"></span>
+			</div>
+		</div>
+            <div class="card-header">Apensar Processos</div>
+            <div class="card-body">
+                <form th:action="@{/processos/apensar/save}" th:object="${processo}" method="post" class="row g-3" id="frm">
+                    <input type="hidden" th:field="*{id}">                   
+                    
+                    <div class="col-3 mb-1">        				
+        				 <label for="tipo" class="form-label">Processo:</label>                       
+                         <span class="badge bg-secondary" th:text="${numanoproc} + ' - ' +    ${assunto}"></span>
+                    </div>  
+                    
+                     <div class="col-4 mb-1">        				
+        				 <label for="tipo" class="form-label">Observação:</label> <br>                      
+                        <input type="text" id="obs" name="obs" size="50"/>
+                    </div>                      
+                    
+                    <div class="col-5 mb-1">                     		
+                    <label for="assunto" class="form-label">Processos</label>                       
+                     <select class="form-select" id="multiple-select-processos" name="processos" data-placeholder="Escolha os processos a serem apensados" multiple>
+						    <option th:each="p : ${processos}" th:text="${p.numanoproc} + ' - ' + ${p.assunto} " th:value="${p.id}">
+					</select>					
+                    </div>   
+                    
+                    <div class="col-6 mb-3">                     
+                        <div class="card" style="width: 95rem; color: #00537d;">    
+                                  
+                        </div>
+                    </div>                                      
+
+                    <!-- Adicionando o alinhamento correto do botão à direita -->
+                    <div class="col-12 form-footer">
+                    <button type="button" class="btn btn-success btn-sm" id="salvar">                    
+                     	salvar <span class="spinner fa fa-spinner fa-spin"></span> <!-- Spinner oculto por padrão --> </button>                   
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+
+
+    <div layout:fragment="jscript">      
+    <script type="text/javascript">
+    setTimeout(function() { $("#msg").fadeOut( "slow")}, 3000);
+        $( '#multiple-select-processos' ).select2( {
+            theme: "bootstrap-5",
+            width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+            placeholder: $( this ).data( 'placeholder' ),
+            closeOnSelect: false,
+        } );
+        
+            $("#loader").show();
+            $(".fa-spin").hide();
+            $(document).ready(function() {
+                $("#loader").hide();
+            });    
+            
+            $('#salvar').on('click', function() {  					
+                swal({
+                    title: 'Salvar?',
+                    text: "Deseja Salvar Apenso?",
+                    icon: 'warning',
+                    buttons: [true, "Sim!"]
+                }).then((result) => {
+                    if (result) {
+                  	  $("#loader").show();        
+                  	  $("#frm").submit();
+                  	  setInterval(function () { swal("Sucesso", "Resgistro salvo com sucesso", "success")}, 15000);
+                  	  
+                     ;	                      
+                      
+                    }
+                })
+                
+                  
+                
+            });
+        </script>
+    </div>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout.html}">
+<head></head>
+<body>
+<section layout:fragment="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fa fa-list-alt" aria-hidden="true"></i> Tipos de Processo</h5>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a class="btn btn-sm btn-primary" th:href="@{/tiposProcesso/new}" role="button" style="border-radius: 10px;" title="Cadastrar Tipo de Processo">
+                        <i class="fa fa-plus-circle" aria-hidden="true"></i> Novo Tipo
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>                       
+                        <th scope="col">Descrição</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="tipo : ${tiposProcesso}" th:id="'tr' + ${tipo.id}">		                        
+                        <td th:text="${tipo.descricao}"></td>
+                        <td class="text-end">
+                          <a class="btn btn-sm btn-danger" href="#" role="button" th:data-record-id="${tipo.id}"  th:data-record-descricao="${tipo.descricao}" th:id="'del' + ${tipo.id}" title="excluir">
+						     <i class="fa fa-trash-o" aria-hidden="true"></i>
+						  </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<div layout:fragment="jscript">
+ <script>
+ var URL = '[[@{/}]]api/';
+   
+   $("[id*='del']").click(function(event){
+	  	  event.preventDefault();
+	    	var data = $(event.delegateTarget).data();
+	    	var id = data.recordId;
+	  	    var descricao =  data.recordDescricao;	 	
+	  	  
+	  	  swal({
+	  		  title: 'Excluir?',
+	  		  text: "Excluir o Tipo de Processo (" + descricao + ")",
+	  		  icon: 'warning',
+	  		  buttons: [true, "Sim Excluir!"]
+	  		}).then((result) => {
+	  		  if (result) {
+	  			  $("#loader").show()
+	  			  $.ajax({
+	  				  url: URL + "/tiposProcesso/delete/" + id, 
+	  				  method: "DELETE",
+	  				  statusCode: {
+	  					    403: function(xhr) {
+	  					      	swal("Atenção","Você não tem permissão para realizar essa operação","error");
+	  					    }
+	  					  }
+	  				}).done(function() {
+	  					$("#loader").hide()
+	  					swal("Sucesso","Operação realizada com sucesso","success");
+	  				  $('#tr'+id).remove();		  
+	  				});
+	  		   }
+	  		})
+	  	  });
+
+   </script>
+   </div>
+     
+</body>
+</html>

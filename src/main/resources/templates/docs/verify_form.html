@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout.html}">
+<head></head>
+<body>
+ <section layout:fragment="content">
+
+  <div class="container" style="max-width: 500px">
+  <h3 class="mb-1">Validação de
+           <span class="text-primary">Arquivo</span>
+    </h3>
+
+  <form class="mb-2" id="uploadForm" method="post" th:action="@{/docs/files/hashverify}" enctype="multipart/form-data">
+    <input id="input-file" type="file" name="file" accept="application/pdf" class="form-control mb-2" required/>
+    <button class="btn btn-sm btn-outline-success float-right" type="submit">
+      Verificar
+    </button>
+  </form>
+  
+     <div th:if="${msg != null}" class="toast-container top-0 end-0 p-3">	
+		<div class="toast show top-0 end-0" role="alert" aria-live="assertive" aria-atomic="true">
+		  <div th:class="${'toast-header text-bg-' + msg.type}">
+		    <span class='bi bi-exclamation-circle-fill'></span>
+		    <strong class="me-auto"> Atenção</strong>
+		    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+		  </div>
+		  <div th:class="${'toast-body text-bg-' + msg.type}">
+		     [[${msg.mensagem}]]
+		  </div>
+		</div>
+	</div>
+  </div>  
+
+</section>
+ 
+<div layout:fragment="jscript">
+ <script>
+    var URL = '[[@{/}]]api/';
+ </script>
+</div>
+  
+</body>
+</html>
+ 

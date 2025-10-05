@@ -1,0 +1,426 @@
+
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout.html}">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+            background: linear-gradient(to bottom right, #ffffff, #f8f9fa);
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .card-header {
+            background-color: #00537d;
+            color: #fff;
+            border-radius: 10px 10px 0 0;
+            padding: 1rem;
+        }
+        .badge {
+            font-size: 0.875rem;
+        }
+        .btn {
+            border-radius: 5px;
+        }
+        
+                .timeline {
+            border-left: 3px solid #727cf5;
+            border-bottom-right-radius: 4px;
+            border-top-right-radius: 4px;
+            background: rgba(114, 124, 245, 0.09);
+            margin: 0 auto;
+            letter-spacing: 0.2px;
+            position: relative;
+            line-height: 1.4em;
+            font-size: 1.03em;
+            padding: 50px;
+            list-style: none;
+            text-align: left;
+            max-width: 40%;
+        }
+
+        @media (max-width: 767px) {
+            .timeline {
+                max-width: 98%;
+                padding: 25px;
+            }
+        }
+
+        .timeline h1 {
+            font-weight: 300;
+            font-size: 1.4em;
+        }
+
+        .timeline h2,
+        .timeline h3 {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .timeline .event {
+            border-bottom: 1px dashed #e8ebf1;
+            padding-bottom: 25px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        @media (max-width: 767px) {
+            .timeline .event {
+                padding-top: 30px;
+            }
+        }
+
+        .timeline .event:last-of-type {
+            padding-bottom: 0;
+            margin-bottom: 0;
+            border: none;
+        }
+
+        .timeline .event:before,
+        .timeline .event:after {
+            position: absolute;
+            display: block;
+            top: 0;
+        }
+
+        .timeline .event:before {
+            left: -207px;
+            content: attr(data-date);
+            text-align: right;
+            font-weight: 100;
+            font-size: 0.9em;
+            min-width: 120px;
+        }
+
+        @media (max-width: 767px) {
+            .timeline .event:before {
+                left: 0px;
+                text-align: left;
+            }
+        }
+
+        .timeline .event:after {
+            -webkit-box-shadow: 0 0 0 3px #727cf5;
+            box-shadow: 0 0 0 3px #727cf5;
+            left: -55.8px;
+            background: #fff;
+            border-radius: 50%;
+            height: 9px;
+            width: 9px;
+            content: "";
+            top: 5px;
+        }
+
+        @media (max-width: 767px) {
+            .timeline .event:after {
+                left: -31.8px;
+            }
+        }
+
+        .rtl .timeline {
+            border-left: 0;
+            text-align: right;
+            border-bottom-right-radius: 0;
+            border-top-right-radius: 0; 
+            border-bottom-left-radius: 4px;
+            border-top-left-radius: 4px;
+            border-right: 3px solid #727cf5;
+        }
+
+        .rtl .timeline .event::before {
+            left: 0;
+            right: -170px;
+        }
+
+        .rtl .timeline .event::after {
+            left: 0;
+            right: -55.8px;
+        }
+    </style>
+</head>
+<body>
+    <section layout:fragment="content" class="justify-content-center align-items-center p-2">
+        <div class="container text-center text-md-start mt-3">
+          <div class="row mb-1">
+            <div class="col-md-6">
+        
+            </div>      
+        </div>   
+        
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5><i class="bi bi-people" aria-hidden="true"></i> Processos </h5>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <a class="btn btn-sm btn-primary" th:href="@{/processos/new}" role="button" title="Cadastrar Processo">
+                                        <i class="bi bi-file-earmark-plus"></i> Novo Processo
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            
+                        </div>
+                      <div class="card-body">
+               					
+               		 <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Número</th>
+                                    <th scope="col">Ano</th>
+                                    <th scope="col">Número/Ano</th>
+                                    <th scope="col">Assunto</th>
+                                    <th scope="col">Classificação</th>
+                                    <th scope="col">Tramitar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="rs : ${processo}" th:id="'tr' + ${rs.id}"> 
+                                    <td th:text="${rs.numproc}"></td>
+                                    <td th:text="${rs.ano}"></td>
+                                    <td th:text="${rs.numanoproc}"></td>
+                                    <td>
+                                        <a href="#" th:data-record-id="${rs.id}" th:data-record-numano="${rs.numanoproc}" th:id="'tramite' + ${rs.id}" title="Ver Eventos do Processo">
+                                            <span th:text="${rs.assunto}"></span>
+                                        </a> 
+                                    </td>
+                                    <td th:text="${rs.classificacao}"></td>
+                                    <td>
+                                    <span th:if="${rs.arquivado == 0}">
+                                    	<a class="btn btn-sm btn-primary" href="#" th:id="'indicarProcesso' + ${rs.id}" role="button"  th:data-record-numano="${rs.numanoproc}" th:data-record-id="${rs.id}" title="Indicar para Atendimento">
+                                           <i class="fa fa-hand-o-right" aria-hidden="true"></i> Indicar
+                                        </a>
+                                        
+                                        <a class="btn btn-sm btn-warning" th:href="@{/tramite/new/} + ${rs.id}" role="button" th:id="'tramitarProcesso' + ${rs.id}" th:data-record-id="${rs.id}" title="Tramitar Processo">
+                                            <i class="fa fa-share" aria-hidden="true"></i>
+                                        </a>
+                                      
+	                                         <a class="btn btn-sm btn-danger" href="#" role="button" th:id="'arquivarDesarquivarProcesso' + ${rs.id}" th:data-record-id="${rs.id}" th:data-record-arquivado="${rs.arquivado}" title="Arquivar Processo">
+	                                            arquivar
+	                                        </a>
+                                        </span>
+                                         <span th:if="${rs.arquivado == 1}">                                         
+                                         	<a class="btn btn-sm btn-danger" href="#" role="button" th:id="'arquivarDesarquivarProcesso' + ${rs.id}" th:data-record-id="${rs.id}" th:data-record-arquivado="${rs.arquivado}" title="Desarquivar Processo">
+	                                            desarquivar
+	                                        </a>
+                                         </span>
+                                         
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+                    <!-- Modal -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Processo <span id="nprocesso"></span></h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title"><b>Eventos do Processo</b></h6>
+                                        <div id="eventos"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>       
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        </div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="modalIndicarprocesso" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fs-5"  > Processo <span class="badge text-bg-secondary" id="modalNumProcesso"></span> </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      <input type="hidden" id="modalNumProcessoInput">
+       			<label>Selecione a indicação para esse processo:</label>
+       		     <select id="indicacao"  class="form-select form-select-sm">           			
+           			            
+       			 </select>	
+       			 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" id="fechar">Fechar</button>      
+        <button type="button" class="btn btn-success btn-sm" id="salvarIndicacao">Salvar</button>     
+      </div>
+    </div>
+  </div>
+</div>
+
+    </section>
+   <div layout:fragment="jscript">
+   <script>
+    // URL base para as operações AJAX
+    const URL = '[[@{/}]]api/';       
+    
+    $("[id*='tramitarProcesso']").click(function(event){
+        $("#loader").show(); 
+    });
+    
+    $("#fechar").click(function(event){
+        $("#loader").hide(); 
+    });
+    
+    $("[id*='indicarProcesso']").click(function(event){
+    	 $("#loader").show();  
+    	  event.preventDefault();
+          var data = $(event.delegateTarget).data();
+          var id = data.recordId;
+          var numano =  data.recordNumano;
+          var idSetor = $("#idSetor").val();
+          $("#indicacao option").remove();        
+          $.ajax({
+              url: URL + "usuarios/setor/"+idSetor,
+              method: "GET",
+          }).done(function(data) { 
+        	  $('#indicacao').append($('<option>', {value: 0, text : "Selecione..." }));            
+              $.each( data, function( index, rs ){                        
+                 
+                 $('#indicacao').append($('<option>', { 
+   			        value: rs.id,
+   			        text : rs.nome
+   			    }));
+                 
+              });                     			
+            
+            
+              $("#loader").hide(); 
+          });
+          
+          $("#modalNumProcesso").text(numano);
+          $("#modalNumProcessoInput").val(id);
+          
+          $('#modalIndicarprocesso').modal('show');
+    });
+    
+    
+    $("[id*='arquivarDesarquivarProcesso']").click(function(event){   	
+   	     event.preventDefault();
+         var data = $(event.delegateTarget).data();
+         var id = data.recordId;
+         var numano =  data.recordNumano;
+         var idSetor = $("#idSetor").val();      
+         var arquivado = data.recordArquivado;         
+         var situacao = "";
+         
+         if(arquivado == 1)
+        	 situacao = "Desarquivar";
+         else
+        	 situacao = "Arquivar";
+         
+         alert(arquivado)
+         swal({
+             title: 'Atenção!',
+             text: "Deseja " + situacao + " Processo?",
+             icon: 'warning',
+             buttons: [true, "Sim!"]
+         }).then((result) => {
+             if (result) {
+           	  $("#loader").show();        
+           
+              $.ajax({
+                  url: URL + "tramites/processo/arquivar/"+id+"/arquivado/"+arquivado,
+                  method: "GET",
+              }).done(function(data) {              
+                  $("#loader").hide(); 
+                  swal("Sucesso", data.mensagem, data.type)	
+              });       
+             }
+         })    
+   });
+
+    
+    $("#salvarIndicacao").click(function(event){           	   
+        event.preventDefault();
+        var data = $(event.delegateTarget).data();
+        var id = data.recordId;
+        var numano =  data.recordNumano;
+		var idProcesso = $("#modalNumProcessoInput").val();
+        var indicacao = $("#indicacao").val()
+        $("#loader").show();  
+        $.ajax({
+            url: URL + "tramites/processo/id/"+idProcesso+"/responsavel/"+indicacao,
+            method: "GET",
+        }).done(function(data) {    
+        	if(data.ret == 1)
+        		swal("Sucesso", data.mensagem, data.type)		
+			else
+				swal("Error", data.mensagem, data.type)	
+ 
+         
+            $("#loader").hide(); 
+        	$('#modalIndicarprocesso').modal('hide');
+        });
+    }); 
+    
+    
+    $("[id*='tramite']").click(function(event){           	   
+        event.preventDefault();
+        var data = $(event.delegateTarget).data();
+        var id = data.recordId;
+        var numano =  data.recordNumano;
+        var ul = "";
+        $("#nprocesso").text(numano);  
+        $("#loader").show();  
+        $.ajax({
+            url: URL + "eventos/processo/"+id,
+            method: "GET",
+        }).done(function(data) {  
+            ul = '<ul class="timeline">';
+            $.each( data, function( index, rs ){                  				
+                ul += '<li class="event" data-date=" '+rs.dataevento+' ">'+ 
+                       '<h5>'+rs.tipo_id.evento+'</h5>'+ 
+                       '<p style="font-size:11px;">'+rs.evento+'</p>'+ 
+                       '</li>'; 
+            });                     			
+            ul += '</ul>';
+            $("#eventos").append(ul)
+            $('#staticBackdrop').modal('show');
+            $("#loader").hide(); 
+        });
+    });
+    
+    
+
+    
+    $("#tipagem").change(function(){
+       	 $("#loader").show(); 
+       	 $("#frm").submit();
+ 	});
+</script>
+</div>
+</body>
+</html>
+

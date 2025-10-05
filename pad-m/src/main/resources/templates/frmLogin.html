@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout.html}">
+<head>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-signin {
+            max-width: 500px; 
+            padding: 40px;    
+            border-radius: 5px; 
+            background-color: #f8f9fa; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+        }
+   </style>
+</head>
+<body class="d-flex align-items-center justify-content-center vh-75">
+    <div class="text-center">
+        <section layout:fragment="content">
+            <div class="row justify-content-center">
+                <div class="col-md-12">
+                    <div class="form-signin w-100 m-auto">
+	                    <div class="d-flex justify-content-center">
+	   		               <img class="mb-4" th:src="@{/images/padm.png}" alt="Logo" width="70" height="70">
+	   		            </div>
+                        <h1 class="h3 mb-3 fw-normal">PAD-M Área restrita</h1>
+                        <form th:action="@{/login}" method="post">
+                            <div class="form-group mb-3">                            
+                                <div class="form-floating">                                	
+                                    <input type="text" class="form-control" name="username" placeholder="name@example.com" required autofocus>
+                                    <label for="floatingInput">Usuário</label>                                    
+                                </div>
+                            </div>
+                            <div class="form-group mb-3">                            
+                                <div class="form-floating">                                	
+                                    <input type="password" class="form-control" name="password" placeholder="Password" required>
+                                    <label for="floatingPassword">Senha</label>                                    
+                                </div>
+                            </div>
+                            <p class="text-danger" th:if="${error}">Erro ao tentar efetuar o login. Verifique suas credenciais!</p>
+                            <button class="w-100 btn btn-lg btn-primary" type="submit">Login</button>
+                            <p class="mt-4 mb-2 text-muted text-center">&copy; PAD-M</p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div layout:fragment="jscript">
+        <script th:if="${error}">
+            var URL = '[[@{/}]]api/';
+            swal("ATENÇÃO!", "Verifique suas credenciais!", "error");
+        </script>
+    </div>
+</body>
+</html>
