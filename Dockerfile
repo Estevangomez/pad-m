@@ -17,7 +17,7 @@ FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
 # Copia o JAR gerado na etapa anterior
-COPY --from=build /app/target/padm-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/pad-m-0.0.1-SNAPSHOT.jar app.jar
 
 # Define a porta (Render define via variável PORT)
 ENV PORT=8080
