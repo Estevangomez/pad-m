@@ -24,4 +24,4 @@ ENV PORT=8080
 EXPOSE 8080
 
 # Comando que inicia o app
-ENTRYPOINT ["java", "-Xmx256m", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Dserver.port=${PORT}", "-Xmx512m", "-jar", "app.jar"]
